@@ -42,7 +42,9 @@ theorem result {Plane : Type _} [EuclideanPlane Plane] (e : Setting Plane) : (QD
   have AD_para_BC : (SEG_nd e.A e.D e.A_ne_D.symm) ∥ (SEG_nd e.B e.C e.C_ne_B) := SegND.rev_para_of_para BC_para_DA.symm
   -- $AD \parallel BC$ combined with $AD = BC$ finishes the proof.
   apply qdr_cvx_is_prg_nd_of_para_eq_length'
+  -- $AD \parallel BC$.
   · exact AD_para_BC
+  -- $DA = AD = BC$.
   · calc
       _ = (SEG e.D e.A).length := (SEG e.D e.A).length_of_rev_eq_length
       _ = _ := by exact e.BC_eq_DA.symm
