@@ -17,13 +17,13 @@ structure Setting (Plane : Type _) [EuclideanPlane Plane] where
   B : Plane
   C : Plane
   D : Plane
-  ABCD_IsPRG : (QDR A B C D) IsPRG
+  ABCD_IsPRG : (QDR A B C D) IsParallelogram
   -- $CDEF$ is a parallelogram.
   E : Plane
   F : Plane
-  EFCD_IsPRG : (QDR E F C D) IsPRG
+  EFCD_IsPRG : (QDR E F C D) IsParallelogram
 -- Prove that $ABFE$ is a parallelogram.
-theorem result (Plane : Type _) [EuclideanPlane Plane] (e : Setting Plane) : (QDR e.A e.B e.F e.E) IsPRG := by
+theorem result (Plane : Type _) [EuclideanPlane Plane] (e : Setting Plane) : (QDR e.A e.B e.F e.E) IsParallelogram := by
   /-
   Because $ABCD$ is a parallelogram, $\overarrow{AB} = \overarrow{DC}$.
   Because $EFCD$ is a parallelogram, $\overarrow{EF} = \overarrow{DC}$.

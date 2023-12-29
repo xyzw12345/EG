@@ -21,14 +21,15 @@ structure Setting1 (Plane : Type _) [EuclideanPlane Plane] where
   B : Plane
   C : Plane
   D : Plane
-  ABCD_IsPRG : (QDR A B C D) IsPRG_nd
+  QDR_ABCD_IsND : (QDR A B C D).IsND
+  ABCD_IsPRGnd : (QDR A B C D).IsParallelogram_nd
   -- Let $P$ and $Q$ be points on the segments $AB$ and $CD$, respectively, such that $BP = DQ$.
   P : Plane
   Q : Plane
   P_int_AB : P LiesInt SEG A B
   Q_int_CD : Q LiesInt SEG C D
   BP_eq_DQ : (SEG B P).length = (SEG D Q).length
-  D_ne_B : D ≠ B := nd₂₄_of_is_prg_nd (QDR A B C D) ABCD_IsPRG
+  D_ne_B : D ≠ B := nd₂₄_of_is_prg_nd (QDR A B C D) ABCD_IsPRGnd
   -- Let $M$ be the foot of perpendicular from $P$ to the diagonal $BD$.
   M : Plane
   perp_foot_M : M = perp_foot P (LIN B D D_ne_B)
@@ -54,7 +55,7 @@ structure Setting2 (Plane : Type _) [EuclideanPlane Plane] extends (Setting1 Pla
 
 -- Prove that $PM = QN$.
 theorem result1 {Plane : Type _} [EuclideanPlane Plane] (e : Setting2 Plane) : (SEG e.P e.M).length = (SEG e.Q e.N).length := by
-  /- Because quadrilateral $ABCD$ is a parallelogram, $AB \parallel CD$, thus the alternate interior angle $\angle ABD = \angle CDB$,
+  /- Because quadrilateral $ABCD$ is a parallelogram, $AB \parallel CD$, the alternate interior angle $\angle ABD = \angle CDB$,
   therefore $\angle PBM = \angle ABD = \angle CDB = \angle QDN$. Also, $\angle BMP = \pm\frac{\pi}{2}$, $\angle DNQ = \pm\frac{\pi}{2}$
   because $M$ and $N$ are the foot of perpendicular from $P$, $Q$ to $BD$, respectively.
   In $\triangle MBP$ and $\triangle NDQ$,
@@ -70,14 +71,29 @@ theorem result1 {Plane : Type _} [EuclideanPlane Plane] (e : Setting2 Plane) : (
   have P_ne_M : e.P ≠ e.M := by sorry
   have D_ne_N : e.D ≠ e.N := by sorry
   have Q_ne_N : e.Q ≠ e.N := by sorry
+  have P_ne_B : e.P ≠ e.B := by sorry
+  have Q_ne_D : e.Q ≠ e.D := by sorry
+  have A_ne_B : e.A ≠ e.B := by sorry
+  have D_ne_B : e.D ≠ e.B := by sorry
+  have C_ne_D : e.C ≠ e.D := by sorry
+  have B_ne_D : e.B ≠ e.D := by sorry
   -- have
-  have ang_BMP_eq_ang_DNQ_mod_pi : (ANG e.B e.M e.P B_ne_M P_ne_M).dvalue = (ANG e.D e.N e.Q D_ne_N Q_ne_N).dvalue := by sorry
-
+  have ang1 : (ANG e.B e.M e.P B_ne_M P_ne_M).dvalue = (ANG e.D e.N e.Q D_ne_N Q_ne_N).dvalue := by sorry
+  have ang2 : ∠ e.P e.B e.M P_ne_B B_ne_M.symm = ∠ e.Q e.D e.N Q_ne_D D_ne_N.symm := by
+    calc
+      _ = ∠ e.A e.B e.D A_ne_B D_ne_B := by
+        apply eq_ang_val_of_lieson_lieson (A := e.P) (B := e.M) (O := e.B) (A' := e.A) (B' := e.D)
+      _ = ∠ e.C e.D e.B C_ne_D B_ne_D := by sorry
+      _ = _ := by sorry
   have MBP_congr_NCQ : (TRI_nd e.M e.B e.P not_colinear_MBP).IsCongr (TRI_nd e.N e.D e.Q not_colinear_NDQ) := by sorry
   exact MBP_congr_NCQ.edge₂
 
 -- Prove that $PM \parallel QN$.
 theorem result2 {Plane : Type _} [EuclideanPlane Plane] (e : Setting2 Plane) : (LIN e.P e.M e.M_ne_P) ∥ (LIN e.Q e.N e.N_ne_Q) := by
+  /-
+  We have $PM \perp BD$ and $BD \perp QN$ because $M$ is the perpendicular foot from $P$ to $BD$, respectively.
+  Then $PM \perp QN$ because $PM \perp BD$ and $BD \perp QN$.
+  -/
   -- We have $PM \perp BD$ because $M$ is the perpendicular foot from $P$ to $BD$.
   have PM_perp_BD : LIN e.P e.M e.M_ne_P ⟂ LIN e.B e.D e.D_ne_B := by
     simp only [e.perp_foot_M]
@@ -86,7 +102,7 @@ theorem result2 {Plane : Type _} [EuclideanPlane Plane] (e : Setting2 Plane) : (
   have BD_perp_QN : LIN e.B e.D e.D_ne_B ⟂ LIN e.Q e.N e.N_ne_Q := by
     simp only [e.perp_foot_N]
     exact perpendicular.symm (line_of_self_perp_foot_perp_line_of_not_lies_on e.not_Q_lieson_BD)
-  -- then $PM \perp QN$ because $PM \perp BD$ and $BD \perp QN$.
+  -- Then $PM \perp QN$ because $PM \perp BD$ and $BD \perp QN$.
   exact parallel_of_perp_perp (l₂ := (LIN e.B e.D e.D_ne_B)) PM_perp_BD BD_perp_QN
 
 end SCHAUM_Problem_1_14
