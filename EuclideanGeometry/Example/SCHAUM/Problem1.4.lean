@@ -13,79 +13,113 @@ Let $E$ be a point on the opposite side of $AF$ to $C$, such that EF ∥ AC and 
 Prove that $BC = DE$ and $AC = EF$.
 -/
 
-variable {A F : Plane} {A_ne_f : A ≠ F}
---Let $B$ be a point on $AB$.
-variable {B : Plane} {B_on_seg: B LiesInt (SEG A F)}
---Let $D$ be a point on $AC$
-variable {D : Plane} {D_on_seg: D LiesInt (SEG A F)}
--- $AD = BF$.
-variable {seg_eq : (SEG A D).length = (SEG B F).length}
---Let $C$ be a point.
-variable {C : Plane} {C_off_lin: ¬ colinear A F C} --Implied by opposite side.
---Let $E$ be a point on the opposite side of $AF$ to $C$, such that EF ∥ AC and ED ∥ BC.
-variable {E : Plane} {E_off_lin: ¬ colinear A F E} --Implied by opposite side.
--- Claim:$C \ne A$ , $C \ne B$, $C, A, B$ is not colinear, $E, F, D$ is not colinear.
-lemma cabnd : ¬ colinear C A B := by sorry
-lemma efdnd : ¬ colinear E F D := by sorry
-lemma c_ne_a : C ≠ A := (ne_of_not_colinear C_off_lin).2.1.symm
-lemma c_ne_B : C ≠ B :=by
-  by_contra h
-  rw [h] at C_off_lin
-  let S := SEG A F
-  have a_on_s : A LiesOn S := by sorry
-  have b_on_s : B LiesOn S := by sorry
-  have f_on_s : F LiesOn S := by sorry
-  absurd C_off_lin
-  apply Seg.colinear_of_lies_on a_on_s f_on_s b_on_s
+structure Setting1 (Plane : Type _) [EuclideanPlane Plane] where
+  A : Plane
+  B : Plane
+  C : Plane
+  D : Plane
+  E : Plane
+  F : Plane
+  AD_eq_BF : (SEG A D).length = (SEG B F).length
+  A_ne_F : PtNe A F
+  B_int : B LiesInt (SEG A F)
+  D_int : D LiesInt (SEG A F)
+  AFC_nd : ¬ colinear A F C
+  AFE_nd : ¬ colinear A F E
+  C_side : IsOnLeftSide C (SEG_nd A F)
+  E_side : IsOnRightSide E (SEG_nd A F)
 
---Claim:$E \ne D$ , $E \ne F$.
-lemma e_ne_d : E ≠ D := by sorry
-lemma e_ne_f : E ≠ F := (ne_of_not_colinear E_off_lin).1
---such that EF ∥ AC and ED ∥ BC.
-variable {EF_AC_para: (SegND E F e_ne_f)∥(SegND A C c_ne_a.symm)}
-variable {ED_BC_para: (SegND E D e_ne_d)∥(SegND B C c_ne_B.symm)}
---(Opposite side is already implied by the known, also the theorem about sides of a line is not complete)
+attribute [instance] Setting1.A_ne_F
+instance C_ne_A {Plane : Type _} [EuclideanPlane Plane] {e : Setting1 Plane}: PtNe e.C e.A := by sorry
+instance C_ne_B {Plane : Type _} [EuclideanPlane Plane] {e : Setting1 Plane}: PtNe e.C e.B := by sorry
+instance E_ne_D {Plane : Type _} [EuclideanPlane Plane] {e : Setting1 Plane}: PtNe e.E e.D := by sorry
+instance E_ne_F {Plane : Type _} [EuclideanPlane Plane] {e : Setting1 Plane}: PtNe e.E e.F := by sorry
 
---Prove that $BC = DE$ and $AC = EF$.
-theorem Problem1_4_ : (SEG B C).length = (SEG D E).length ∧ (SEG A C).length = (SEG E F).length := by
--- Claim : $B \ne A$, $D \ne F$, $E \ne F$.
-  have b_ne_a : B ≠ A := by sorry
-  have d_ne_f : D ≠ F := by sorry
-  have e_ne_f : E ≠ F := by sorry
--- We have $\angle B A C = \angle D F E$ and $\angle C B A = \angle E D F$ because alternate interior angles are equal.
-  have ang2 : ∠ B A C b_ne_a (c_ne_a (C_off_lin := C_off_lin)) = ∠ D F E d_ne_f e_ne_f := by
-    have alt : IsAlternateIntAng (ANG C A B (c_ne_a (C_off_lin := C_off_lin)) b_ne_a) (ANG E F D e_ne_f d_ne_f) := by
+structure Setting2 (Plane : Type _) [EuclideanPlane Plane] extends Setting1 Plane where
+  EF_para_AC : (SEG_nd E F) ∥ (SEG_nd A C)
+  ED_para_BC : (SEG_nd E D) ∥ (SEG_nd B C)
+
+--Prove that $BC = DE$.
+theorem Result1 {Plane : Type _} [EuclideanPlane Plane] {e : Setting2 Plane} : (SEG e.B e.C).length = (SEG e.D e.E).length := by
+  -- Claim : $B \ne A$, $D \ne F$, $E \ne F$.
+  haveI B_ne_A : PtNe e.B e.A := by sorry
+  haveI D_ne_F : PtNe e.D e.F := by sorry
+  haveI E_ne_F : PtNe e.E e.F := by sorry
+  -- We have $\angle B A C = \angle D F E$ and $\angle C B A = \angle E D F$ because alternate interior angles are equal.
+  have ang2 : ∠ e.B e.A e.C = ∠ e.D e.F e.E := by
+    have alt : IsAlternateIntAng (ANG e.C e.A e.B) (ANG e.E e.F e.D) := by
       constructor
-      · sorry
-      · sorry
-    have : ∠ C A B (c_ne_a (C_off_lin := C_off_lin)) b_ne_a = ∠ E F D e_ne_f d_ne_f := eq_value_of_isalternateintang alt
+      sorry
+      sorry
+    have : ∠ e.C e.A e.B = ∠ e.E e.F e.D := by apply value_eq_of_isalternateintang alt
     calc
-      _ = - ∠ C A B (c_ne_a (C_off_lin := C_off_lin)) b_ne_a := by apply neg_value_of_rev_ang
-      _ = - ∠ E F D e_ne_f d_ne_f := by rw [this]
-      _ = ∠ D F E d_ne_f e_ne_f := (neg_value_of_rev_ang d_ne_f e_ne_f).symm
-  have ang3 : ∠ C B A c_ne_b b_ne_a.symm = ∠ E D F e_ne_d d_ne_f.symm := by
-    have alt : IsAlternateIntAng (ANG C B A c_ne_b b_ne_a.symm) (ANG E D F e_ne_d d_ne_f.symm) := by sorry
-    exact eq_value_of_isalternateintang alt
--- We have $AB = FD$ because $AD = AF - BF = AF - BD = BF$.
-  have seg1 : (SEG A B).length = (SEG F D).length := by
+      _ = - ∠ e.C e.A e.B := by apply neg_value_of_rev_ang
+      _ = - ∠ e.E e.F e.D := by rw [this]
+      _ = ∠ e.D e.F e.E := (neg_value_of_rev_ang).symm
+  have ang3 : ∠ e.C e.B e.A = ∠ e.E e.D e.F := by
+    have alt : IsAlternateIntAng (ANG e.C e.B e.A) (ANG e.E e.D e.F) := by sorry
+    exact value_eq_of_isalternateintang alt
+  -- We have $AB = FD$ because $AD = AF - BF = AF - BD = BF$.
+  have seg1 : (SEG e.A e.B).length = (SEG e.F e.D).length := by
     calc
-      _ = (SEG A F).length - (SEG B F).length := by
+      _ = (SEG e.A e.F).length - (SEG e.B e.F).length := by
         apply eq_sub_of_add_eq
         symm
-        apply length_eq_length_add_length B_on_seg
-      _ = (SEG A F).length - (SEG A D).length := by rw [seg_eq]
-      _ = (SEG D F).length := (eq_sub_of_add_eq' (length_eq_length_add_length (D_on_seg)).symm).symm
-      _ = (SEG F D).length := length_of_rev_eq_length'
--- Then $\triangle CAB ≅ \triangle EFD$ by SAS.
-  have hcong : Triangle_nd.IsCongr (TRI_nd C A B cabnd) (TRI_nd E F D efdnd) := by
-    apply Triangle_nd.congr_of_ASA
+        apply length_eq_length_add_length e.B_int
+      _ = (SEG e.A e.F).length - (SEG e.A e.D).length := by simp only [e.AD_eq_BF]
+      _ = (SEG e.D e.F).length := (eq_sub_of_add_eq' (length_eq_length_add_length e.D_int).symm).symm
+      _ = (SEG e.F e.D).length := length_of_rev_eq_length'
+  have CAB_nd : ¬ colinear e.C e.A e.B := by sorry
+  have EFD_nd : ¬ colinear e.E e.F e.D := by sorry
+  -- Then $\triangle CAB ≅ \triangle EFD$ by SAS.
+  have hcong : TriangleND.IsCongr (TRI_nd e.C e.A e.B CAB_nd) (TRI_nd e.E e.F e.D EFD_nd) := by
+    apply TriangleND.congr_of_ASA
     · exact ang2
     · exact seg1
     · exact ang3
--- The main goal can then be proved by the congruence.
-  constructor
-  · exact hcong.edge₂
-  · calc
-      _ = (SEG C A).length := length_of_rev_eq_length'
-      _ = (SEG E F).length := hcong.edge₃
+  -- The main goal can then be proved by the congruence.
+  exact hcong.edge₂
+
+-- Prove that $AC = EF$.
+theorem Result2 {Plane : Type _} [EuclideanPlane Plane] {e : Setting2 Plane} : (SEG e.A e.C).length = (SEG e.E e.F).length := by
+  -- Claim : $B \ne A$, $D \ne F$, $E \ne F$.
+  haveI B_ne_A : PtNe e.B e.A := by sorry
+  haveI D_ne_F : PtNe e.D e.F := by sorry
+  haveI E_ne_F : PtNe e.E e.F := by sorry
+  -- We have $\angle B A C = \angle D F E$ and $\angle C B A = \angle E D F$ because alternate interior angles are equal.
+  have ang2 : ∠ e.B e.A e.C = ∠ e.D e.F e.E := by
+    have alt : IsAlternateIntAng (ANG e.C e.A e.B) (ANG e.E e.F e.D) := by
+      constructor
+      sorry
+      sorry
+    have : ∠ e.C e.A e.B = ∠ e.E e.F e.D := by apply value_eq_of_isalternateintang alt
+    calc
+      _ = - ∠ e.C e.A e.B := by apply neg_value_of_rev_ang
+      _ = - ∠ e.E e.F e.D := by rw [this]
+      _ = ∠ e.D e.F e.E := (neg_value_of_rev_ang).symm
+  have ang3 : ∠ e.C e.B e.A = ∠ e.E e.D e.F := by
+    have alt : IsAlternateIntAng (ANG e.C e.B e.A) (ANG e.E e.D e.F) := by sorry
+    exact value_eq_of_isalternateintang alt
+  -- We have $AB = FD$ because $AD = AF - BF = AF - BD = BF$.
+  have seg1 : (SEG e.A e.B).length = (SEG e.F e.D).length := by
+    calc
+      _ = (SEG e.A e.F).length - (SEG e.B e.F).length := by
+        apply eq_sub_of_add_eq
+        symm
+        apply length_eq_length_add_length e.B_int
+      _ = (SEG e.A e.F).length - (SEG e.A e.D).length := by simp only [e.AD_eq_BF]
+      _ = (SEG e.D e.F).length := (eq_sub_of_add_eq' (length_eq_length_add_length e.D_int).symm).symm
+      _ = (SEG e.F e.D).length := length_of_rev_eq_length'
+  have CAB_nd : ¬ colinear e.C e.A e.B := by sorry
+  have EFD_nd : ¬ colinear e.E e.F e.D := by sorry
+  -- Then $\triangle CAB ≅ \triangle EFD$ by SAS.
+  have hcong : TriangleND.IsCongr (TRI_nd e.C e.A e.B CAB_nd) (TRI_nd e.E e.F e.D EFD_nd) := by
+    apply TriangleND.congr_of_ASA
+    · exact ang2
+    · exact seg1
+    · exact ang3
+  calc
+    _ = (SEG e.C e.A).length := length_of_rev_eq_length'
+    _ = (SEG e.E e.F).length := hcong.edge₃
+
 end Problem1_4_

@@ -112,7 +112,7 @@ theorem Result {Plane : Type _} [EuclideanPlane Plane] {e : Setting2 Plane} : �
             apply eq_toDirLine_of_pt_lies_int_to_target (e.D_int)
     -- Then $∠ ABC = ∠ EDF = -∠ FDE$.
     calc
-      _ = ∠ e.E e.D e.F := eq_value_of_iscorrespondingang hCrsp --corresponding angle
+      _ = ∠ e.E e.D e.F := value_eq_of_iscorrespondingang hCrsp --corresponding angle
       _ = _ := by apply neg_value_of_rev_ang --anti-symm
   --$BA = DF$
   have e₃ : (SEG e.B e.A).length = (SEG e.D e.F).length := by

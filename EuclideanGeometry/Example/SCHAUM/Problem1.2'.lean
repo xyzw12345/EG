@@ -30,15 +30,17 @@ structure Setting (Plane : Type _) [EuclideanPlane Plane] where
   -- such that $AE = AD$.
   AE_eq_AD : (SEG A E).length = (SEG A D).length
   -- Claim: $B \ne C$.
-  B_ne_C : B ≠ C :=
+  B_ne_C : PtNe B C :=
     -- This is because vertices $B, C$ of a nondegenerate triangle are distinct.
-    (ne_of_not_colinear not_colinear_ABC).1.symm
+    ⟨(ne_of_not_colinear not_colinear_ABC).1.symm⟩
   -- Let $P$ be the foot of perpendicular from $D$ to $BC$.
   P : Plane
-  hP : P = perp_foot D (LIN B C B_ne_C.symm)
+  hP : P = perp_foot D (LIN B C)
   -- Let $Q$ be the foot of perpendicular from $E$ to $BC$.
   Q : Plane
-  hQ : Q = perp_foot E (LIN B C B_ne_C.symm)
+  hQ : Q = perp_foot E (LIN B C)
+
+attribute [instance] Setting.B_ne_C
 
 /- # Another Style of Setting-/
 structure Setting1 (Plane : Type _) [EuclideanPlane Plane] where
@@ -58,18 +60,17 @@ structure Setting1 (Plane : Type _) [EuclideanPlane Plane] where
   AE_eq_AD : (SEG A E).length = (SEG A D).length
 
 -- Claim: $B \ne C$.
-lemma B_ne_C {Plane : Type _} [EuclideanPlane Plane] {e : Setting1 Plane}: e.B ≠ e.C := by
-    -- This is because vertices $B, C$ of a nondegenerate triangle are distinct.
-  exact (ne_of_not_colinear e.not_colinear_ABC).1.symm
+instance B_ne_C {Plane : Type _} [EuclideanPlane Plane] {e : Setting1 Plane}: PtNe e.B e.C :=
+  -- This is because vertices $B, C$ of a nondegenerate triangle are distinct.
+  ⟨(ne_of_not_colinear e.not_colinear_ABC).1.symm⟩
 
 structure Setting2 (Plane : Type _) [EuclideanPlane Plane] extends Setting1 Plane where
-  B_ne_C : B ≠ C := B_ne_C
   -- Let $P$ be the foot of perpendicular from $D$ to $BC$.
   P : Plane
-  hP : P = perp_foot D (LIN B C B_ne_C.symm)
+  hP : P = perp_foot D (LIN B C)
   -- Let $Q$ be the foot of perpendicular from $E$ to $BC$.
   Q : Plane
-  hQ : Q = perp_foot E (LIN B C B_ne_C.symm)
+  hQ : Q = perp_foot E (LIN B C)
 
 -- Prove that $DP = EQ$.
 theorem result {Plane : Type _} [EuclideanPlane Plane] (e : Setting Plane) : (SEG e.D e.P).length = (SEG e.E e.Q).length := by
@@ -112,40 +113,44 @@ theorem result {Plane : Type _} [EuclideanPlane Plane] (e : Setting Plane) : (SE
         exact sorry --(length_eq_length_add_length (SEG A C) E (E_on_seg)).symm
       _ = (SEG e.C e.E).length := sorry -- length_eq_length_of_rev (SEG E C)
   -- We have $A \ne B$.
-  have A_ne_B : e.A ≠ e.B := (ne_of_not_colinear e.not_colinear_ABC).2.2.symm
+  haveI A_ne_B : PtNe e.A e.B := ⟨(ne_of_not_colinear e.not_colinear_ABC).2.2.symm⟩
   -- We have $A \ne C$.
-  have A_ne_C : e.A ≠ e.C := (ne_of_not_colinear e.not_colinear_ABC).2.1
+  haveI A_ne_C : PtNe e.A e.C := ⟨(ne_of_not_colinear e.not_colinear_ABC).2.1⟩
   -- We have $C \ne B$.
-  have C_ne_B : e.C ≠ e.B := (ne_of_not_colinear e.not_colinear_ABC).1
+  haveI C_ne_B : PtNe e.C e.B := ⟨(ne_of_not_colinear e.not_colinear_ABC).1⟩
   -- We have $\triangle PBD$ is nondegenerate
-  have not_colinear_PBD : ¬ colinear e.P e.B e.D := by sorry
+  haveI not_colinear_PBD : ¬ colinear e.P e.B e.D := by sorry
   -- We have $B \ne D$.
-  have B_ne_D : e.B ≠ e.D := (ne_of_not_colinear not_colinear_PBD).1.symm
+  haveI B_ne_D : PtNe e.B e.D := ⟨(ne_of_not_colinear not_colinear_PBD).1.symm⟩
   -- We have $P \ne D$.
-  have P_ne_D : e.P ≠ e.D := (ne_of_not_colinear not_colinear_PBD).2.1
+  haveI P_ne_D : PtNe e.P e.D := ⟨(ne_of_not_colinear not_colinear_PBD).2.1⟩
   -- We have $P \ne B$.
-  have P_ne_B : e.P ≠ e.B := (ne_of_not_colinear not_colinear_PBD).2.2.symm
+  haveI P_ne_B : PtNe e.P e.B := ⟨(ne_of_not_colinear not_colinear_PBD).2.2.symm⟩
   -- We have $\triangle QCE$ is nondegenerate
-  have not_colinear_QCE : ¬ colinear e.Q e.C e.E := by sorry
+  haveI not_colinear_QCE : ¬ colinear e.Q e.C e.E := by sorry
   -- We have $C \ne E$.
-  have C_ne_E : e.C ≠ e.E := (ne_of_not_colinear not_colinear_QCE).1.symm
+  haveI C_ne_E : PtNe e.C e.E := ⟨(ne_of_not_colinear not_colinear_QCE).1.symm⟩
   -- We have $Q \ne E$.
-  have Q_ne_E : e.Q ≠ e.E := (ne_of_not_colinear not_colinear_QCE).2.1
+  haveI Q_ne_E : PtNe e.Q e.E := ⟨(ne_of_not_colinear not_colinear_QCE).2.1⟩
   -- We have $Q \ne C$.
-  have Q_ne_C : e.Q ≠ e.C := (ne_of_not_colinear not_colinear_QCE).2.2.symm
+  haveI Q_ne_C : PtNe e.Q e.C := ⟨(ne_of_not_colinear not_colinear_QCE).2.2.symm⟩
   -- Therefore, $\angle DBP = \angle ABC = -\angle ACB = - \angle ECQ$.
-  have ang2 : (∠ e.D e.B e.P B_ne_D.symm P_ne_B) = - (∠ e.E e.C e.Q C_ne_E.symm Q_ne_C) := by
+  have ang2 : ∠ e.D e.B e.P = - ∠ e.E e.C e.Q := by
     calc
       -- the angle $DBP$ is the same as angle $ABC$,
-      _ = ∠ e.A e.B e.C A_ne_B C_ne_B := by sorry
-      -- in the isoceles triangle $ABC$, we have $\angle ABC = \angle BCA$,
-      _ = ∠ e.B e.C e.A C_ne_B.symm A_ne_C := by sorry
-      -- $\angle BCA = - \angle ACB$ by symmetry,
-      _ = - ∠ e.A e.C e.B A_ne_C C_ne_B.symm := by sorry
+      _ = ∠ e.A e.B e.C := by sorry -- xxxxx_of_liesint_liesint, need order relations on a segment
+      -- $\angle ABC = - \angle CBA$ by symmetry,
+      _ = - ∠ e.C e.B e.A := neg_value_of_rev_ang
+      -- $- \angle CBA = - \angle ACB$ because $\triangle ABC$ is isoceles,
+      _ = - ∠ e.A e.C e.B := by
+        simp
+        exact (is_isoceles_tri_iff_ang_eq_ang_of_nd_tri (tri_nd := TRI_nd e.A e.B e.C e.not_colinear_ABC)).mp e.isoceles_ABC
+      -- $- \angle ACB = \angle BCA$ by symmetry,
+      _ = ∠ e.B e.C e.A := neg_value_of_rev_ang.symm
       -- the angle $ECQ$ is the same as angle $ACB$.
-      _ = - ∠ e.E e.C e.Q C_ne_E.symm Q_ne_C := by sorry
+      _ = - ∠ e.E e.C e.Q := by sorry -- xxxxx_of_liesint_liesint
   -- $|\angle DPB| = |\angle EQC|$.
-  have ang1 : (∠ e.B e.P e.D P_ne_B.symm P_ne_D.symm) = - (∠ e.C e.Q e.E Q_ne_C.symm Q_ne_E.symm) := by sorry
+  have ang1 : ∠ e.B e.P e.D = - ∠ e.C e.Q e.E := by sorry
   -- $\triangle DPB \congr_a \triangle EQC$ (by AAS).
   have h : (TRI_nd e.P e.B e.D not_colinear_PBD) ≅ₐ (TRI_nd e.Q e.C e.E not_colinear_QCE) := by
     apply TriangleND.acongr_of_AAS
@@ -154,7 +159,7 @@ theorem result {Plane : Type _} [EuclideanPlane Plane] (e : Setting Plane) : (SE
     -- $\cdot |\angle DPB| = |\angle EQC|$
     · exact ang2
     -- $\cdot BD = CE$
-    · sorry --exact seg1
+    · exact seg1
   -- Therefore, $DP = EQ$.
   exact h.edge₂
 

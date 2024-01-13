@@ -89,7 +89,7 @@ theorem Result {Plane : Type _} [EuclideanPlane Plane] {e : Setting2 Plane} : �
     calc
       _=-∠ e.D e.B e.E := by apply neg_value_of_rev_ang --anti-symm
       _=-∠ e.A e.C e.B := by --Alternate interior angle
-        have neg : ∠ e.D e.B e.E = ∠ e.A e.C e.B := eq_value_of_isalternateintang (hAltint)
+        have neg : ∠ e.D e.B e.E = ∠ e.A e.C e.B := value_eq_of_isalternateintang (hAltint)
         simp only [neg]
   --$BE = CA$
   have e₃ : (SEG e.B e.E).length = (SEG e.C e.A).length := by

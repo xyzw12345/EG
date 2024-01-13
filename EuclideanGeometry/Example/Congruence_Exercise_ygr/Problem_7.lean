@@ -41,7 +41,7 @@ theorem Wuwowuji_Problem_1_7 : (SEG A D).length = (SEG B C).length := by
       _ = _ := hseg.symm
   -- Use AAS to prove $▵ CBA ≅ₐ ▵ DAB$.
   have h : (TRI_nd C B A hnd1) ≅ₐ (TRI_nd D A B hnd2) := by
-    apply Triangle_nd.acongr_of_AAS
+    apply TriangleND.acongr_of_AAS
     · -- $∠ BCA = -∠ ADB$ because $∠ ACB = ∠ ADB$.
       calc
         _ = -∠ A C B a_ne_c.symm b_ne_c.symm := by apply neg_value_of_rev_ang
