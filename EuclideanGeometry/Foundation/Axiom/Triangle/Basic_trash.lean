@@ -85,6 +85,8 @@ theorem cclock_of_eq_angle (tr_nd₁ tr_nd₂ : TriangleND P)(a : tr_nd₁.angle
 
 theorem clock_of_eq_neg_angle (tr_nd₁ tr_nd₂ : TriangleND P)(a : tr_nd₁.angle₁.value = - tr_nd₂.angle₁.value) : tr_nd₁.is_cclock ↔ ¬ tr_nd₂.is_cclock := by sorry
 
+theorem angle_sum_eq_pi_of_tri_nd (tr_nd : TriangleND P) : tr_nd.angle₁.value + tr_nd.angle₂.value + tr_nd.angle₃.value = π := sorry
+-- ShenZiJun
 end TriangleND
 
 theorem angle_sum_eq_pi_of_tri (tri : Triangle P) (h₁ : tri.point₂ ≠ tri.point₃) (h₂ : tri.point₃ ≠ tri.point₁) (h₃ : tri.point₁ ≠ tri.point₂) : ∠ tri.point₂ tri.point₁ tri.point₃ h₃.symm h₂ + ∠ tri.point₃ tri.point₂ tri.point₁ h₁.symm h₃ + ∠ tri.point₁ tri.point₃ tri.point₂ h₂.symm h₁ = π := sorry

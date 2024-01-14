@@ -22,6 +22,9 @@ theorem angle_eq_zero_of_same_dir {A O : P} [h₁ : PtNe A O] : ∠ A O A = 0 :=
 
 theorem eq_ang_of_liesint_liesint {A A' B B' O: P} [h₁ : PtNe A O] [h₂ : PtNe B O] [h₁' : PtNe A' O] [h₂' : PtNe B' O] (LiesInt1 : A' LiesInt (RAY O A) )  (LiesInt2 :  B' LiesInt (RAY O B) ) : ANG A O B = ANG A' O B' := sorry
 
+theorem eq_ang_val_of_liesint_liesint {A A' B B' O: P} [h₁ : PtNe A O] [h₂ : PtNe B O] [h₁' : PtNe A' O] [h₂' : PtNe B' O] (LiesInt1 : A' LiesInt (RAY O A) )  (LiesInt2 :  B' LiesInt (RAY O B) ) : ∠ A O B =  ∠ A' O B' := sorry
+--ShenZiJun
+
 --Nailin Guan
 theorem neg_value_of_rev_ang {A B O: P} [h₁ : PtNe A O] [h₂ : PtNe B O] : ∠ A O B = -∠ B O A := sorry
 

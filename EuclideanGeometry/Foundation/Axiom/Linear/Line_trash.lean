@@ -4,7 +4,7 @@ import EuclideanGeometry.Foundation.Axiom.Linear.Ray_trash
 namespace EuclidGeom
 
 variable {P : Type _} [EuclideanPlane P]
-
+-- equivalent to h.ne_source, alias
 theorem ne_source_of_lies_int_seg_nd (A B C : P) [hne : PtNe B A] (h : C LiesInt (SEG_nd A B)) : C ≠ A := by sorry
 
 theorem ne_source_of_lies_int_seg (A B C : P) (h2 : C LiesInt (SEG A B)) : C ≠ A := by sorry
