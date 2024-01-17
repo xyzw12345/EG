@@ -1,5 +1,6 @@
 import EuclideanGeometry.Foundation.Index
 import EuclideanGeometry.Foundation.Axiom.Triangle.Basic_trash
+import EuclideanGeometry.Foundation.Axiom.Triangle.Congruence_trash
 
 noncomputable section
 
@@ -67,8 +68,8 @@ theorem Result1 {Plane : Type _} [EuclideanPlane Plane] {e : Setting1 Plane} : (
   have BAE_nd : ¬ colinear e.B e.A e.E := flip_colinear_fst_snd.mt ABE_nd
   -- We have that $B, D, E$ are not colinear because $D, B, E$ are not colinear.
   have BDE_nd : ¬ colinear e.B e.D e.E := flip_colinear_fst_snd.mt DBE_nd
-  -- In $\triangle ABE$ and $\triangle DBE$,
-  have : (TRI_nd e.B e.A e.E BAE_nd) ≅ₐ (TRI_nd e.B e.D e.E BDE_nd) := by
+  -- $\triangle BAE \congr_a \triangle BDE$ (by SAS).
+  have BAE_congr_BDE : (TRI_nd e.B e.A e.E BAE_nd) ≅ₐ (TRI_nd e.B e.D e.E BDE_nd) := by
     apply TriangleND.acongr_of_SAS
     -- $BE = BE$
     · rfl
@@ -76,11 +77,8 @@ theorem Result1 {Plane : Type _} [EuclideanPlane Plane] {e : Setting1 Plane} : (
     · exact e.BE_bisec
     -- $BA = BD$
     · exact e.BA_eq_BD
-  -- Thus $\triangle BAE \congr_a \triangle BDE$ (by SAS).
   -- Then $\triangle ABE \congr_a \triangle DBE$.
-
-  -- apply flip_acongr xxxxx
-  sorry
+  exact BAE_congr_BDE.flip_acongr.perm_acongr.perm_acongr
 
 structure Setting2 (Plane : Type _) [EuclideanPlane Plane] extends Setting1 Plane where
   BAC_val : ∠ B A C = (5 : ℝ) / (9 : ℝ) * π

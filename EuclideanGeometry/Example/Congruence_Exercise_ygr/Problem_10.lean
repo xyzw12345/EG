@@ -9,7 +9,7 @@ namespace Congruence_Exercise_ygr
 
 namespace Problem_10
 /-
-$E, F$ lies on segment $BC$, $AB \parallel CD$, $\angle BAE = \angle CDF$, $BE = CF$.
+$E, F$ lies on segment $BC$, $BA \parallel CD$, $\angle BAE = \angle CDF$, $BE = CF$.
 
 Prove that $AE = DF$.
 -/
@@ -28,8 +28,8 @@ structure Setting (Plane : Type _) [EuclideanPlane Plane] where
   AD_opposite : IsOnOppositeSide A D (SEG_nd B C)
   A_ne_B : PtNe A B
   C_ne_D : PtNe C D
-  -- $AB \parallel CD$
-  AB_para_CD : (SEG_nd A B) ∥ (SEG_nd C D)
+  -- $BA \parallel CD$
+  BA_para_CD : (SEG_nd B A) ∥ (SEG_nd C D)
   -- $D \neq F$
   D_ne_F : PtNe D F := by sorry
   -- $A \neq E$
@@ -48,7 +48,7 @@ attribute [instance] Setting.A_ne_E
 -- Prove that $AE = DF$.
 theorem Result {Plane : Type _} [EuclideanPlane Plane] {e : Setting Plane} : (SEG e.A e.E).length = (SEG e.D e.F).length := by
   /-
-  Because $AB \parallel CD$ and $A, D$ lies on the opposite sides of line $BC$, angle $ABC$ and angle $DCB$ are alternate interior angles.
+  Because $BA \parallel CD$ and $A, D$ lies on the opposite sides of line $BC$, angle $ABC$ and angle $DCB$ are alternate interior angles.
   In $\triangle ABE$ and $\triangle DCF$,
   \bullet \qquad $\angle BAE = \angle CDF$,
   \bullet \qquad $\angle EBA = \angle FCD$ because $\angle EBA = - \angle ABC$, $\angle FCD = - \angle DCF$, and angle $ABC$ and angle $DCB$ are alternate interior angles
@@ -63,8 +63,17 @@ theorem Result {Plane : Type _} [EuclideanPlane Plane] {e : Setting Plane} : (SE
   haveI F_ne_C : PtNe e.F e.C := ⟨(ne_of_not_colinear DCF_nd).1⟩
   -- Because $AB \parallel CD$ and $A, D$ lies on the opposite sides of line $BC$, angle $ABC$ and angle $DCB$ are alternate interior angles.
   have : IsAlternateIntAng (ANG e.A e.B e.C) (ANG e.D e.C e.B) := by
-    sorry
-  -- In $\triangle ABE$ and $\triangle DCF$,
+    constructor
+    · show (RAY e.B e.A).toDir = - (RAY e.C e.D).toDir
+      apply neg_toDir_of_parallel_and_opposite_side (A := e.B) (B := e.C) (C := e.A) (D := e.D)
+      · exact e.B_ne_C.out
+      · exact e.A_ne_B.out
+      · exact e.C_ne_D.out.symm
+      · exact e.BA_para_CD
+      · exact e.AD_opposite
+    · show (DLIN e.B e.C) = (DLIN e.C e.B).reverse
+      exact DirLine.pt_pt_rev_eq_rev
+  -- $\triangle ABE \cong \triangle DCF$ (by AAS).
   have ABE_cong_DCF : (TRI_nd e.A e.B e.E ABE_nd) ≅ (TRI_nd e.D e.C e.F DCF_nd) := by
     apply TriangleND.congr_of_AAS
     -- $\angle BAE = \angle CDF
@@ -91,7 +100,6 @@ theorem Result {Plane : Type _} [EuclideanPlane Plane] {e : Setting Plane} : (SE
       _ = _ := neg_value_of_rev_ang.symm
     -- $BE = CF$
     exact e.BE_eq_CF
-  -- Thus $\triangle ABE \cong \triangle DCF$ by AAS.
   -- AE = EA = FD = DF$ by congruence.
   calc
     -- $AE = EA$ by symmetry

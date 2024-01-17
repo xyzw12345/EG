@@ -2,6 +2,8 @@ import EuclideanGeometry.Foundation.Index
 import EuclideanGeometry.Foundation.Axiom.Linear.Perpendicular_trash
 import EuclideanGeometry.Foundation.Axiom.Linear.Parallel_trash
 import EuclideanGeometry.Foundation.Construction.Polygon.Parallelogram_trash
+import EuclideanGeometry.Foundation.Axiom.Position.Angle_trash
+import EuclideanGeometry.Foundation.Axiom.Triangle.Congruence_trash
 
 noncomputable section
 
@@ -58,20 +60,17 @@ structure Setting2 (Plane : Type _) [EuclideanPlane Plane] extends (Setting1 Pla
 
 -- Prove that $PM = QN$.
 theorem result1 {Plane : Type _} [EuclideanPlane Plane] (e : Setting2 Plane) : (SEG e.P e.M).length = (SEG e.Q e.N).length := by
-  /- Because quadrilateral $ABCD$ is a parallelogram, $AB \parallel CD$, the alternate interior angle $\angle ABD = \angle CDB$,
-  therefore $\angle PBM = \angle ABD = \angle CDB = \angle QDN$. Also, $\angle BMP = \pm\frac{\pi}{2}$, $\angle DNQ = \pm\frac{\pi}{2}$
-  because $M$ and $N$ are the foot of perpendicular from $P$, $Q$ to $BD$, respectively.
-  In $\triangle MBP$ and $\triangle NDQ$,
-  $\bullet \qquad \angle BMP = \angle DNQ \mod \pi$
-  $\bullet \qquad \angle PBM = \angle QDN$
-  $\bullet \qquad BP = DQ$
-  Thus $\triangle MBP \congr \triangle NCQ$ (by AAS),
-  which implies $PM = QN$.
+  /-
+  In $\triangle PBD$ and $\triangle QDB$,
+  $\bullet \qquad PB = QD$
+  $\bullet \qquad \angle BPD = \angle DQB$ by the properties of a parallelogram
+  $\bullet \qquad BD = DB$
+  Thus $\triangle PBD \congr \triangle QDB$ (by SAS), which implies the lengths of the corresponding heights of the two triangle is equal, $PM = QN$.
   -/
-  -- We have $M, B, P$ are not collinear because $P$ is not on line $BD$, namely line $BM$.
-  have MBP_nd : ¬ colinear e.M e.B e.P := by sorry
-  -- We have $N, D, Q$ are not collinear because $Q$ is not on line $BD$, namely line $ND$.
-  have NDQ_nd : ¬ colinear e.N e.D e.Q := by sorry
+  -- We have $P, B, D$ are not collinear because $P$ is not on line $BD$
+  have PBD_nd : ¬ colinear e.P e.B e.D := by sorry
+  -- We have $Q, D, B$ are not collinear because $Q$ is not on line $BD$
+  have QDB_nd : ¬ colinear e.Q e.D e.B := by sorry
   -- We have $B \ne M$.
   haveI B_ne_M : PtNe e.B e.M := by sorry
   -- We have $P \ne M$.
@@ -92,43 +91,28 @@ theorem result1 {Plane : Type _} [EuclideanPlane Plane] (e : Setting2 Plane) : (
   haveI C_ne_D : PtNe e.C e.D := by sorry
   -- We have $B \ne D$.
   haveI B_ne_D : PtNe e.B e.D := by sorry
-  -- $\angle PMB = \pm\frac{\pi}{2}$, $\angle QND = \pm\frac{\pi}{2}$ because $M$ and $N$ are the foot of perpendicular from $P$, $Q$ to $BD$, respectively.
-  have ang_PMB_dval_eq_pi_div_two : (ANG e.P e.M e.B).dvalue = ↑(π / 2) := by
-    apply angle_dval_eq_pi_div_two_at_perp_foot (l := (LIN e.B e.D))
-    · sorry -- trivial, but can't be fixed now
-    · exact e.not_P_lieson_BD
-    · exact e.perp_foot_M
-  have ang_QND_dval_eq_pi_div_two : (ANG e.Q e.N e.D).dvalue = ↑(π / 2) := by
-    apply angle_dval_eq_pi_div_two_at_perp_foot (l := (LIN e.B e.D))
-    · sorry -- trivial, but can't be fixed now
-    · exact e.not_Q_lieson_BD
-    · exact e.perp_foot_N
-  -- So $\angle BMP = \angle DNQ \mod \pi$.
-  have ang1 : (ANG e.B e.M e.P).dvalue = (ANG e.D e.N e.Q).dvalue := by
+  -- $\triangle PBD \congr \triangle QDB$ (by SAS)
+  have PBD_congr_QDB : (TRI_nd e.B e.D e.P (perm_colinear_trd_fst_snd.mt PBD_nd)) ≅ (TRI_nd e.D e.B e.Q (perm_colinear_trd_fst_snd.mt QDB_nd)) := by
+    apply TriangleND.congr_of_SAS
+    -- $PB = QD$
     calc
-      -- $\angle BMP = -\angle PMB$ by symmetry.
-      _ = - (ANG e.P e.M e.B).dvalue := by apply neg_dvalue_of_rev_ang
-      -- $-\angle PMB$ equals to $-\pi / 2 (\mod \pi)$ because their opposite numbers are equal.
-      _ = - ↑(π / 2) := by simp only [ang_PMB_dval_eq_pi_div_two]
-      -- $-\pi / 2$ equals to $-\angle QND (\mod \pi)$ because their opposite numbers are equal.
-      _ = - (ANG e.Q e.N e.D).dvalue := by simp only [ang_QND_dval_eq_pi_div_two]
-      -- $\angle QND = \angle
-      _ = _ := by apply (neg_dvalue_of_rev_ang _ _).symm
-  -- Because quadrilateral $ABCD$ is a parallelogram, $AB \parallel CD$, the alternate interior angle $\angle ABD = \angle CDB$, therefore $\angle PBM = \angle ABD = \angle CDB = \angle QDN$.
-  have ang2 : ∠ e.P e.B e.M = ∠ e.Q e.D e.N := by
-    calc
-      -- $\angle PBM = \angle ABD$ because $P$ lies on ray $BA$ and $M$ lies on ray $BD$.
-      _ = ∠ e.A e.B e.D := by sorry -- apply eq_ang_val_of_lies_int_lies_int
-      -- $\angle ABD = \angle CDB$ is a property in parallelogram $ABCD$.
-      _ = ∠ e.C e.D e.B := nd_eq_int_angle_value_of_is_prg_nd_variant e.ABCD_IsPRGnd
-      -- $\angle CDB = \angle QDN$ because $Q$ lies on ray $DC$ and $N$ lies on ray $DB$.
-      _ = _ := by sorry -- apply eq_ang_val_of_lies_int_lies_int
-  -- $BP = DQ$ is stated in the problem.
-  have seg1 : (SEG e.B e.P).length = (SEG e.D e.Q).length := e.BP_eq_DQ
-  -- Thus $\triangle MBP \congr \triangle NCQ$ (by AAS).
-  have MBP_congr_NCQ : (TRI_nd e.M e.B e.P MBP_nd).IsCongr (TRI_nd e.N e.D e.Q NDQ_nd) := by sorry -- Prove with a single line.
-  -- Congruence implies $PM = QN$.
-  exact MBP_congr_NCQ.edge₂
+      -- $PB = BP$ by symmetry
+      _ = (SEG e.B e.P).length := length_of_rev_eq_length'
+      -- $BP = DQ$ by condition
+      _ = (SEG e.D e.Q).length := e.BP_eq_DQ
+      -- $DQ = QD$ by symmetry
+      _ = _ := length_of_rev_eq_length'
+    -- $\angle BPD = \angle DQB$
+    sorry
+    -- $BD = DB$ by symmetry
+    exact length_of_rev_eq_length'
+  -- $M, N$ are perpendicular foots
+  simp only [e.perp_foot_M, e.perp_foot_N]
+  -- line $BD$ and line $DB$ are identical
+  have BD_is_DB : (LIN e.B e.D) = (LIN e.D e.B) := (SEG_nd e.B e.D).toLine_eq_rev_toLine
+  nth_rw 2 [BD_is_DB]
+  -- $PM$ and $QN$ is equal as the correspongding heights of $\triangle PBD$ and $\triangle QDB$
+  exact height₃_eq_of_congr PBD_congr_QDB
 
 -- Prove that $PM \parallel QN$.
 theorem result2 {Plane : Type _} [EuclideanPlane Plane] (e : Setting2 Plane) : (LIN e.P e.M) ∥ (LIN e.Q e.N) := by

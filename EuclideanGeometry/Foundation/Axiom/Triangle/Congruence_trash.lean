@@ -9,5 +9,17 @@ theorem Triangle.IsCongr.unique_of_eq_eq {tr₁ tr₂ : Triangle P} (h : tr₁.I
 
 theorem acongr_of_AAS_variant (tr_nd₁ tr_nd₂ : TriangleND P) (a₁ : tr_nd₁.angle₁.dvalue = - tr_nd₂.angle₁.dvalue) (a₂ : tr_nd₁.angle₂.value = - tr_nd₂.angle₂.value) (e₃ : tr_nd₁.edge₁.length = tr_nd₂.edge₁.length) : tr_nd₁ ≅ₐ tr_nd₂ := by sorry
 
+-- ShenZiJun
+theorem height₃_eq_of_congr {tr_nd₁ tr_nd₂ : TriangleND P} (h : tr_nd₁.IsCongr tr_nd₂) : (SEG tr_nd₁.point₃ (perp_foot tr_nd₁.point₃ (LIN tr_nd₁.point₁ tr_nd₁.point₂))).length = (SEG tr_nd₂.point₃ (perp_foot tr_nd₂.point₃ (LIN tr_nd₂.point₁ tr_nd₂.point₂))).length := by sorry
+
+namespace TriangleND
+
+namespace IsACongr
+
+theorem flip_acongr {tr_nd₁ tr_nd₂ : TriangleND P} (h : tr_nd₁.IsACongr tr_nd₂) : (flip_vertices tr_nd₁).IsACongr (flip_vertices tr_nd₂) := sorry
+
+end IsACongr
+
+end TriangleND
 
 end EuclidGeom

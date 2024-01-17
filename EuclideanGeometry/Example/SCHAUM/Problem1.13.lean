@@ -24,20 +24,25 @@ structure Setting (Plane : Type _) [EuclideanPlane Plane] where
   QDR_ABCD_IsParallelogram_nd : (QDR A B C D).IsParallelogram_nd := by sorry
   QDRnd_ABCD_IsConvex : (QDR_nd A B C D QDR_ABCD_IsND).IsConvex := by sorry
   -- Then the vertexes of the parallelogram are pairwise distinct.
-  C_ne_A : C ≠ A := by sorry
-  D_ne_B : D ≠ B := by sorry
+  C_ne_A : PtNe C A := by sorry
+  D_ne_B : PtNe D B := by sorry
   -- The diagonals $AC$ and $BD$ meet at $M$.
   M : Plane
   M_inx : M = (QDR_cvx A B C D QDR_ABCD_IsND QDRnd_ABCD_IsConvex).diag_inx
   -- $M ≠ A$ and $M ≠ C$ because $A ≠ C$ and $M$ is the midpoint of $AC$.
-  M_ne_A : M ≠ A := by sorry
-  C_ne_M : C ≠ M := by sorry
+  M_ne_A : PtNe M A := by sorry
+  C_ne_M : PtNe C M := by sorry
   -- Let $P$ and $Q$ be points on $AM$ and $MC$, respectively, such that $PM = MQ$.
   P : Plane
   Q : Plane
-  P_int_AM : P LiesInt (SEG_nd A M M_ne_A)
-  Q_int_MC : Q LiesInt (SEG_nd M C C_ne_M)
+  P_int_AM : P LiesInt (SEG_nd A M)
+  Q_int_MC : Q LiesInt (SEG_nd M C)
   PM_eq_MQ : (SEG P M).length = (SEG M Q).length
+
+attribute [instance] Setting.C_ne_A
+attribute [instance] Setting.D_ne_B
+attribute [instance] Setting.M_ne_A
+attribute [instance] Setting.C_ne_M
 
 theorem result {Plane : Type _} [EuclideanPlane Plane] (e : Setting Plane) : (QDR e.P e.B e.Q e.D).IsParallelogram := by
   /-
