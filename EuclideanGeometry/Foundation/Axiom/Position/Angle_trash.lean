@@ -22,14 +22,38 @@ theorem angle_eq_zero_of_same_dir {A O : P} [h₁ : PtNe A O] : ∠ A O A = 0 :=
 
 theorem eq_ang_of_liesint_liesint {A A' B B' O: P} [h₁ : PtNe A O] [h₂ : PtNe B O] [h₁' : PtNe A' O] [h₂' : PtNe B' O] (LiesInt1 : A' LiesInt (RAY O A) )  (LiesInt2 :  B' LiesInt (RAY O B) ) : ANG A O B = ANG A' O B' := sorry
 
-theorem eq_ang_val_of_liesint_liesint {A A' B B' O: P} [h₁ : PtNe A O] [h₂ : PtNe B O] [h₁' : PtNe A' O] [h₂' : PtNe B' O] (LiesInt1 : A' LiesInt (RAY O A) )  (LiesInt2 :  B' LiesInt (RAY O B) ) : ∠ A O B =  ∠ A' O B' := sorry
---ShenZiJun
+theorem eq_ang_val_of_liesint_liesint {A A' B B' O : P} [h₁ : PtNe A O] [h₂ : PtNe B O] [h₁' : PtNe A' O] [h₂' : PtNe B' O] (LiesInt1 : A' LiesInt (RAY O A) )  (LiesInt2 :  B' LiesInt (RAY O B) ) : ∠ A O B =  ∠ A' O B' := sorry
+-- ShenZiJun
+
+theorem eq_ang_val_of_same_liesint {A B B' O : P} [h₁ : PtNe A O] [h₂ : PtNe B O] [h₂' : PtNe B' O] (LiesInt2 : B' LiesInt (RAY O B)) : ∠ A O B =  ∠ A O B' := sorry
+-- ShenZiJun
+
+theorem eq_ang_val_of_liesint_same {A A' B O : P} [h₁ : PtNe A O] [h₂ : PtNe B O] [h₁' : PtNe A' O] (LiesInt1 : A' LiesInt (RAY O A)) : ∠ A O B =  ∠ A' O B := sorry
+-- ShenZiJun
+
+theorem eq_ang_val_of_same_liesint' {A B B' O : P} [h₁ : PtNe A O] [h₂ : PtNe B O] [h₂' : PtNe B' O] (LiesInt2 : B' LiesInt (SEG O B)) : ∠ A O B =  ∠ A O B' := sorry
+-- ShenZiJun
+
+theorem eq_ang_val_of_liesint_same' {A A' B O : P} [h₁ : PtNe A O] [h₂ : PtNe B O] [h₁' : PtNe A' O] (LiesInt1 : A' LiesInt (SEG O A)) : ∠ A O B =  ∠ A' O B := sorry
+-- ShenZiJun
+
+theorem val_eq_pi_of_liesint {A B C : P} [h₁ : PtNe A C] [h₁ : PtNe B C] (h : C LiesInt (SEG A B)) : ∠ A C B = π := by sorry
+-- ShenZiJun
+
+theorem dval_eq_zero_of_liesint {A B C : P} [h₁ : PtNe A C] [h₁ : PtNe B C] (h : C LiesInt (SEG A B)) : (ANG A C B).dvalue = 0 := by sorry
+-- ShenZiJun
+
+theorem dval_eq_zero_of_colinear {A B C : P} [h₁ : PtNe A C] [h₁ : PtNe B C] (h : colinear A B C) : (ANG A C B).dvalue = 0 := by sorry
+-- ShenZiJun
+
+theorem ang_dval_eq_ang_dval_add_ang_dval {A B C O : P} [h₁ : PtNe A O] [h₂ : PtNe B O] [h₃ : PtNe C O] : (ANG A O C).dvalue = (ANG A O B).dvalue + (ANG B O C).dvalue := by sorry
+-- ShenZiJun
 
 --Nailin Guan
 theorem neg_value_of_rev_ang {A B O: P} [h₁ : PtNe A O] [h₂ : PtNe B O] : ∠ A O B = -∠ B O A := sorry
 
-theorem neg_dvalue_of_rev_ang {A B O: P} (h₁ : A ≠ O) (h₂ : B ≠ O) : (ANG A O B h₁ h₂).dvalue = -(ANG B O A h₂ h₁).dvalue := sorry
--- WangJingTing
+theorem neg_dvalue_of_rev_ang {A B O: P} [h₁ : PtNe A O] [h₂ : PtNe B O] : (ANG A O B).dvalue = -(ANG B O A).dvalue := sorry
+-- WangJingTing, modified by ShenZiJun
 namespace Angle
 
 theorem end_ray_eq_value_vadd_start_ray (ang : Angle P) : ang.dir₂ = ang.value +ᵥ ang.dir₁ := sorry

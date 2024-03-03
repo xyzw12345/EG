@@ -13,7 +13,7 @@ namespace EuclidGeom
 #check neg_toDir_of_parallel_and_opposite_side
 #check TriangleND.same_orient_of_perm_vertices
 #check TriangleND.iscclock_iff_liesonleft₁
-
+#check neg_inj
 
 /-
 some tips of iff

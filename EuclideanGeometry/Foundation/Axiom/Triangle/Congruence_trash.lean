@@ -14,6 +14,9 @@ theorem height₃_eq_of_congr {tr_nd₁ tr_nd₂ : TriangleND P} (h : tr_nd₁.I
 
 namespace TriangleND
 
+-- ShenZiJun
+theorem congr_of_HL_variant {tr_nd₁ tr_nd₂ : TriangleND P} (h₁ : tr_nd₁.angle₁.dvalue = ↑(π / 2)) (h₂ : tr_nd₂.angle₁.value = tr_nd₁.angle₁.value) (e₁ : tr_nd₁.edge₁.length = tr_nd₂.edge₁.length) (e₂ : tr_nd₁.edge₂.length = tr_nd₂.edge₂.length) : tr_nd₁ ≅ tr_nd₂ := by sorry
+
 namespace IsACongr
 
 theorem flip_acongr {tr_nd₁ tr_nd₂ : TriangleND P} (h : tr_nd₁.IsACongr tr_nd₂) : (flip_vertices tr_nd₁).IsACongr (flip_vertices tr_nd₂) := sorry

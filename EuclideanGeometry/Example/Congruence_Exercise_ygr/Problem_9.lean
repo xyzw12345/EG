@@ -133,8 +133,7 @@ theorem Result2 {Plane : Type _} [EuclideanPlane Plane] {e : Setting2 Plane} : �
       abel
     -- $\angle CDB = \pi$ because $D$ lies on $BC$, so $\pi - \angle ACB - (\angle CDB - \angle EDB) = \pi - \angle ACB - (\pi - \angle e.E e.D e.B)$
     _ = π - ∠ e.A e.C e.B - (π - ∠ e.E e.D e.B) := by
-      have : ∠ e.C e.D e.B = π := by sorry -- apply value_eq_pi_xxxxxx
-      rw [this]
+      rw [val_eq_pi_of_liesint $ Seg.lies_int_rev_iff_lies_int.mpr e.D_int]
     -- plug $\angle ACB = \frac{5\pi}{18}$ and $\angle EDB = \frac{5\pi}{9}$ into the expression and by calculation we have $\pi - \angle ACB - (\pi - \angle e.E e.D e.B) = \frac{5\pi}{18}$.
     _ = _ := by
       simp [e.ACB_val, EDB_val]
