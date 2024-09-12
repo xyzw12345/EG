@@ -3,8 +3,12 @@ import EuclideanGeometry.Foundation.Axiom.Linear.Parallel
 
 namespace EuclidGeom
 
-variable {P : Type _} [EuclideanPlane P]
+variable {P : Type*} [EuclideanPlane P]
 
-theorem Seg_nd.not_para_rev_of_not_para (seg_nd seg_nd' : Seg_nd P) : (¬ seg_nd ∥ seg_nd') → (¬ seg_nd ∥ seg_nd'.reverse) := sorry
+namespace Parallel
+
+theorem segnd_para_line_of_line_para_line (A B : P) (B_ne_A : B ≠ A) (l : Line P) (h : (SEG_nd A B B_ne_A) ∥ l) : (LIN A B B_ne_A) ∥ l := by sorry
+
+end Parallel
 
 end EuclidGeom

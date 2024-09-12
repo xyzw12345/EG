@@ -5,12 +5,12 @@ import EuclideanGeometry.Foundation.Axiom.Position.Angle_ex
 noncomputable section
 namespace EuclidGeom
 
-variable {P : Type _} [EuclideanPlane P]
+variable {P : Type*} [EuclideanPlane P]
 
-theorem pts_are_distinct_of_two_rays_of_angle (ang : Angle P) (nontriv : ang.is_nd) (A B : P) (ha : A LiesInt ang.start_ray) (hb : B LiesInt ang.end_ray) : A ≠ B := by sorry
+theorem pts_are_distinct_of_two_rays_of_angle (ang : Angle P) (nontriv : ang.IsND) (A B : P) (ha : A LiesInt ang.start_ray) (hb : B LiesInt ang.end_ray) : A ≠ B := by sorry
 
 
-/- Position of three (distinct) points.  Giving to colinear (futher classification) -/
+/- Position of three (distinct) points.  Giving to collinear (futher classification) -/
 -- `see line_ex`
 
 -- If a point does not lie on the line associated to the ray, then it is either on the left or the right of the ray

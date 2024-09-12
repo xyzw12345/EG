@@ -5,9 +5,13 @@ import EuclideanGeometry.Foundation.Axiom.Basic.Plane
 import EuclideanGeometry.Foundation.Axiom.Basic.Class
 /- Axiom.Linear -/
 import EuclideanGeometry.Foundation.Axiom.Linear.Ray
-import EuclideanGeometry.Foundation.Axiom.Linear.Colinear
+import EuclideanGeometry.Foundation.Axiom.Linear.Ray_trash
+import EuclideanGeometry.Foundation.Axiom.Linear.Collinear
 import EuclideanGeometry.Foundation.Axiom.Linear.Line
+import EuclideanGeometry.Foundation.Axiom.Linear.Ratio
+import EuclideanGeometry.Foundation.Axiom.Linear.Ratio_trash
 import EuclideanGeometry.Foundation.Axiom.Linear.Class
+import EuclideanGeometry.Foundation.Axiom.Linear.Order
 import EuclideanGeometry.Foundation.Axiom.Linear.Parallel
 import EuclideanGeometry.Foundation.Axiom.Linear.Perpendicular
 /- Axiom.Position -/
@@ -21,35 +25,39 @@ import EuclideanGeometry.Foundation.Axiom.Isometry.Rotation
 import EuclideanGeometry.Foundation.Axiom.Isometry.Translation_ex
 /- Axiom.Triangle -/
 import EuclideanGeometry.Foundation.Axiom.Triangle.Basic
-import EuclideanGeometry.Foundation.Axiom.Triangle.Congruence
-import EuclideanGeometry.Foundation.Axiom.Triangle.Congruence' -- `to avoid ambiguous notation, use notation ≅, ≅ₐ`
+import EuclideanGeometry.Foundation.Axiom.Triangle.Basic_trash
+import EuclideanGeometry.Foundation.Axiom.Triangle.Congruence -- `to avoid ambiguous notation, use notation ≅, ≅ₐ`
 import EuclideanGeometry.Foundation.Axiom.Triangle.Basic_ex
 import EuclideanGeometry.Foundation.Axiom.Triangle.Trigonometric
 import EuclideanGeometry.Foundation.Axiom.Triangle.Similarity
+import EuclideanGeometry.Foundation.Axiom.Triangle.Similarity_trash
+import EuclideanGeometry.Foundation.Axiom.Triangle.IsocelesTriangle
 /- Axiom.Circle -/
 import EuclideanGeometry.Foundation.Axiom.Circle.Basic
 import EuclideanGeometry.Foundation.Axiom.Circle.CCPosition
 import EuclideanGeometry.Foundation.Axiom.Circle.LCPosition
-import EuclideanGeometry.Foundation.Axiom.Circle.IncribedAngle
+import EuclideanGeometry.Foundation.Axiom.Circle.InscribedAngle
+import EuclideanGeometry.Foundation.Axiom.Circle.CirclePower
 
 /- Tactic -/
 /- Tactic.Congruence -/
 import EuclideanGeometry.Foundation.Tactic.Congruence.Attr
 import EuclideanGeometry.Foundation.Tactic.Congruence.Congruence
 -- import EuclideanGeometry.Foundation.Tactic.Congruence.Congruence' -- `need to avoid some name collision during initialization?`
-import EuclideanGeometry.Foundation.Tactic.Colinear.perm_colinear
+import EuclideanGeometry.Foundation.Tactic.Collinear.perm_collinear
 
 /- Constuction -/
 import EuclideanGeometry.Foundation.Construction.Inversion
 /- Construction.ComputationTool-/
 import EuclideanGeometry.Foundation.Construction.ComputationTool.Menelaus
 import EuclideanGeometry.Foundation.Construction.ComputationTool.Ceva
+import EuclideanGeometry.Foundation.Construction.ComputationTool.Parallel
 /- Construction.Triangle -/
 import EuclideanGeometry.Foundation.Construction.Triangle.AngleBisector
+import EuclideanGeometry.Foundation.Construction.Triangle.AngleBisector_trash
 import EuclideanGeometry.Foundation.Construction.Triangle.PerpendicularBisector
 import EuclideanGeometry.Foundation.Construction.Triangle.Orthocenter
 import EuclideanGeometry.Foundation.Construction.Triangle.Centroid
-import EuclideanGeometry.Foundation.Construction.Triangle.IsocelesTriangle
 /- Construction.Polygon -/
 import EuclideanGeometry.Foundation.Construction.Polygon.Quadrilateral
 import EuclideanGeometry.Foundation.Construction.Polygon.Parallelogram

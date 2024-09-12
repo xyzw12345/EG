@@ -3,97 +3,84 @@ import EuclideanGeometry.Foundation.Axiom.Linear.Perpendicular
 
 noncomputable section
 namespace EuclidGeom
-variable {P : Type _} [EuclideanPlane P]
+
+variable {P : Type*} [EuclideanPlane P]
+
+open Real AngValue
 
 namespace Triangle
 
 -- Cosine rule : for a nontrivial triangle ABC, BC^2 = AB^2 + AC^2 - 2 * AB * AC * cos ANG BAC.
 
-theorem cosine_rule' (A B C : P) (hab : B ≠ A) (hac : C ≠ A) : 2 * (Vec.norm (⟨VEC A B, (ne_iff_vec_ne_zero A B).mp hab⟩ : Vec_nd) * Vec.norm (⟨VEC A C, (ne_iff_vec_ne_zero A C).mp hac⟩ : Vec_nd) * Real.cos (Vec_nd.angle ⟨VEC A B, (ne_iff_vec_ne_zero A B).mp hab⟩ ⟨VEC A C, (ne_iff_vec_ne_zero A C).mp hac⟩)) = Seg.length (SEG A B) ^ 2 + Seg.length (SEG A C) ^ 2 - Seg.length (SEG B C) ^ 2 := by
-  rw [norm_mul_norm_mul_cos_angle_eq_inner_of_Vec_nd, length_sq_eq_inner_tovec_tovec, length_sq_eq_inner_tovec_tovec, length_sq_eq_inner_tovec_tovec, seg_tovec_eq_vec, seg_tovec_eq_vec, seg_tovec_eq_vec, ← vec_sub_vec A B C, inner_sub_sub_self, ← InnerProductSpace.Core.conj_symm (@InnerProductSpace.toCore _ _ _ _ InnerProductSpace.complexToReal) (VEC A B) (VEC A C), IsROrC.conj_to_real]
-  ring
+theorem cosine_rule' (A B C : P) [hab : PtNe B A] [hac : PtNe C A] :
+    2 * (‖VEC_nd A B‖ * ‖VEC_nd A C‖ *
+      cos (VecND.angle (VEC_nd A B) (VEC_nd A C))) =
+      Seg.length (SEG A B) ^ 2 + Seg.length (SEG A C) ^ 2 - Seg.length (SEG B C) ^ 2 := by
+  rw [VecND.norm_mul_cos, Seg.length_sq_eq_inner_toVec_toVec,
+    Seg.length_sq_eq_inner_toVec_toVec, Seg.length_sq_eq_inner_toVec_toVec, seg_toVec_eq_vec,
+    seg_toVec_eq_vec, seg_toVec_eq_vec, ← vec_sub_vec A B C, inner_sub_sub_self,
+    ← InnerProductSpace.conj_symm, IsROrC.conj_to_real]
+  ring_nf
+  rw [real_inner_comm (VEC A C), mul_two]
+  rfl
 
-theorem cosine_rule (tr_nd : Triangle_nd P) : 2 * (tr_nd.edge₃.length * tr_nd.edge₂.length * Real.cos tr_nd.angle₁.value) = tr_nd.edge₃.length ^ 2 + tr_nd.edge₂.length ^ 2 - tr_nd.edge₁.length ^ 2 := by
+theorem cosine_rule (tr_nd : TriangleND P) : 2 * (tr_nd.edge₃.length * tr_nd.edge₂.length * cos tr_nd.angle₁.value) = tr_nd.edge₃.length ^ 2 + tr_nd.edge₂.length ^ 2 - tr_nd.edge₁.length ^ 2 := by
   let A := tr_nd.1.point₁
   let B := tr_nd.1.point₂
   let C := tr_nd.1.point₃
-  dsimp only [Seg.length]
-  simp
-  have h : ¬colinear A B C := (tr_nd).2
-  have h0 : B ≠ A := by
-    intro k
-    rw [←k] at h
-    exact h (triv_colinear B C)
-  have h1 : C ≠ A := by
-    intro k
-    rw [←k] at h
-    have p : ¬colinear C C B := by
-     intro k
-     exact h (flip_colinear_snd_trd k)
-    exact p (triv_colinear C B)
-  have h2 : A ≠ C := Ne.symm h1
-  have h3 : 2 * (Vec.norm (⟨VEC A B,(ne_iff_vec_ne_zero A B).mp h0⟩ : Vec_nd) * Vec.norm (⟨VEC A C,(ne_iff_vec_ne_zero A C).mp h1⟩ : Vec_nd) * Real.cos (Vec_nd.angle ⟨VEC A B,(ne_iff_vec_ne_zero A B).mp h0⟩ ⟨VEC A C,(ne_iff_vec_ne_zero A C).mp h1⟩)) = Seg.length (SEG A B) ^ 2 + Seg.length (SEG A C) ^ 2 - Seg.length (SEG B C) ^ 2 := cosine_rule' A B C h0 h1
-  have h4 : Vec.norm (⟨VEC A C,(ne_iff_vec_ne_zero A C).mp h1⟩ : Vec_nd) = Vec.norm (⟨VEC C A,(ne_iff_vec_ne_zero C A).mp h2⟩ : Vec_nd) := by
-    unfold Vec.norm; simp; unfold Vec.mk_pt_pt
-    have l0 : A -ᵥ C = -1 * (C -ᵥ A) := by
-      rw [neg_one_mul]
-      simp
-    rw [l0,map_mul Complex.abs (-1) (C -ᵥ A)]
-    have l1: Complex.abs (-1)=1 := by simp
-    rw [l1,one_mul]
-  have h5 : Seg.length (SEG A C)=Seg.length (SEG C A) := by
-    unfold Seg.length
-    simp; unfold Vec.mk_pt_pt
-    have l0 : A -ᵥ C = -1 * (C -ᵥ A) := by
-      rw [neg_one_mul]
-      simp
-    rw [l0,map_mul Complex.abs (-1) (C -ᵥ A)]
-    have l1 : Complex.abs (-1) = 1 := by simp
-    rw [l1,one_mul]
-  rw [h4] at h3
-  unfold Vec.norm at h3;
-  rw [h5] at h3; unfold Seg.length at h3; simp at h3
-  exact h3
+  let h₃ := @cosine_rule' _ _ A B C tr_nd.nontriv₃ tr_nd.nontriv₂.symm
+  have h₄ : ‖VEC_nd A C tr_nd.nontriv₂.out.symm‖ = ‖VEC_nd C A tr_nd.nontriv₂.out‖
+  · simp_rw [VecND.mkPtPt, ← neg_vec A C]
+    simp only [ne_eq, VecND.mk_neg', VecND.norm_neg]
+  have h₅ : Seg.length (SEG A C) = Seg.length (SEG C A)
+  · rw [Seg.length_eq_norm_toVec, Seg.length_eq_norm_toVec]
+    -- unfold Seg.length Seg.toVec
+    exact vec_norm_eq_rev A C
+    -- simp only [norm_neg, Complex.norm_eq_abs]
+  rw [h₄, h₅] at h₃
+  simp only [ne_eq, Nat.cast_ofNat] at h₃
+  repeat rw [Seg.length_eq_norm_toVec] at *
+  exact h₃
 
-theorem cosine_rule'' (tr_nd : Triangle_nd P) : tr_nd.edge₁.length = (tr_nd.edge₃.length ^ 2 + tr_nd.edge₂.length ^ 2 -  2 * (tr_nd.edge₃.length * tr_nd.edge₂.length * Real.cos tr_nd.angle₁.value)) ^ (1/2) := by sorry
+theorem cosine_rule'' (tr_nd : TriangleND P) : tr_nd.edge₁.length = (tr_nd.edge₃.length ^ 2 + tr_nd.edge₂.length ^ 2 -  2 * (tr_nd.edge₃.length * tr_nd.edge₂.length * cos tr_nd.angle₁.value)) ^ (1/2) := by sorry
 
 -- Sine rule (but only for counterclockwise triangle here, or we need some absolute values)
 -- Should we reformulate it without circle?
--- theorem side_eq_cradius_times_sine_angle (tr_nd : Triangle_nd P) (cclock : tr_nd.is_cclock) : tr_nd.1.edge₁.length = 2 * (tr_nd.toCir).radius * Real.sin (tr_nd.angle₁.value) ∧ tr_nd.1.edge₂.length = 2 * (tr_nd.toCir).radius * Real.sin (tr_nd.angle₂.value) ∧ tr_nd.1.edge₃.length = 2 * (tr_nd.toCir).radius * Real.sin (tr_nd.angle₃.value):= sorry
+-- theorem side_eq_cradius_times_sine_angle (tr_nd : TriangleND P) (cclock : tr_nd.is_cclock) : tr_nd.1.edge₁.length = 2 * (tr_nd.toCir).radius * sin (tr_nd.angle₁.value) ∧ tr_nd.1.edge₂.length = 2 * (tr_nd.toCir).radius * sin (tr_nd.angle₂.value) ∧ tr_nd.1.edge₃.length = 2 * (tr_nd.toCir).radius * sin (tr_nd.angle₃.value):= sorry
 
-theorem sine_rule₁ (tr_nd : Triangle_nd P) : tr_nd.edge₂.length * Real.sin tr_nd.angle₃.value = tr_nd.edge₃.length * Real.sin tr_nd.angle₂.value := sorry
+theorem sine_rule₁ (tr_nd : TriangleND P) : tr_nd.edge₂.length * sin tr_nd.angle₃.value = tr_nd.edge₃.length * sin tr_nd.angle₂.value := sorry
 
-theorem sine_rule₂ (tr_nd : Triangle_nd P) : tr_nd.edge₁.length * Real.sin tr_nd.angle₃.value = tr_nd.edge₃.length * Real.sin tr_nd.angle₁.value := sorry
+theorem sine_rule₂ (tr_nd : TriangleND P) : tr_nd.edge₁.length * sin tr_nd.angle₃.value = tr_nd.edge₃.length * sin tr_nd.angle₁.value := sorry
 
-theorem sine_rule₃ (tr_nd : Triangle_nd P) : tr_nd.edge₂.length * Real.sin tr_nd.angle₁.value = tr_nd.edge₁.length * Real.sin tr_nd.angle₂.value := sorry
+theorem sine_rule₃ (tr_nd : TriangleND P) : tr_nd.edge₂.length * sin tr_nd.angle₁.value = tr_nd.edge₁.length * sin tr_nd.angle₂.value := sorry
 end Triangle
 
 section Pythagoras
 
-theorem Pythagoras_of_ne_ne_perp {A B C : P} (hab : B ≠ A) (hac : C ≠ A) (h : (Seg_nd.toProj ⟨SEG A B, hab⟩).perp = (Seg_nd.toProj ⟨SEG A C, hac⟩)) : (SEG A B).length ^ 2 + (SEG A C).length ^ 2 = (SEG B C).length ^ 2 := by
+theorem Pythagoras_of_ne_ne_perp {A B C : P} (hab : B ≠ A) (hac : C ≠ A) (h : (SegND.toProj ⟨SEG A B, hab⟩).perp = (SegND.toProj ⟨SEG A C, hac⟩)) : (SEG A B).length ^ 2 + (SEG A C).length ^ 2 = (SEG B C).length ^ 2 := by
 
   sorry
 
 theorem Pythagoras_of_perp_foot (A B : P) {l : Line P} (h : B LiesOn l) : (SEG A (perp_foot A l)).length ^ 2 + (SEG B (perp_foot A l)).length ^ 2 = (SEG A B).length ^ 2 := by
   sorry
 
---(tr_nd : Triangle_nd P) : 2 * (tr_nd.1.edge₃.length * tr_nd.1.edge₂.length * Real.cos tr_nd.angle₁.value) = tr_nd.1.edge₃.length ^ 2 + tr_nd.1.edge₂.length ^ 2 - tr_nd.1.edge₁.length ^ 2 := by
+--(tr_nd : TriangleND P) : 2 * (tr_nd.1.edge₃.length * tr_nd.1.edge₂.length * cos tr_nd.angle₁.value) = tr_nd.1.edge₃.length ^ 2 + tr_nd.1.edge₂.length ^ 2 - tr_nd.1.edge₁.length ^ 2 := by
   --let A := tr_nd.1.point₁
   --let B := tr_nd.1.point₂
   --let C := tr_nd.1.point₃
 
 /-- Given ▵ A B C with ∠ B A C = π / 2, A B ^ 2 + A C ^ 2 = B C ^ 2, namely (SEG A B).length ^ 2 + (SEG A C).length ^ 2 = (SEG B C).length ^ 2. -/
-theorem Pythagoras_of_right_triangle_non_trivial (A B C : P) {hnd : ¬ colinear A B C} (right_triangle: ∠ B A C (ne_of_not_colinear hnd).2.2 (ne_of_not_colinear hnd).2.1.symm = π / 2 ) : (SEG A B).length ^ 2 + (SEG A C).length ^ 2 = (SEG B C).length ^ 2 := by
-  have h : Real.cos (∠ B A C (ne_of_not_colinear hnd).2.2 (ne_of_not_colinear hnd).2.1.symm) = 0 := by
-    rw [right_triangle]
-    simp only [Real.cos_pi_div_two]
-  have eq : 2 * ((SEG A B).length * (SEG A C).length * Real.cos (∠ B A C (ne_of_not_colinear hnd).2.2 (ne_of_not_colinear hnd).2.1.symm)) = (SEG A B).length ^ 2 + (SEG A C).length ^ 2 - (SEG B C).length ^ 2 := by
-    --cos rule
+theorem Pythagoras_of_right_triangle_non_trivial (A B C : P) {hnd : ¬ Collinear A B C} (right_triangle: ∠ B A C (ne_of_not_collinear hnd).2.2 (ne_of_not_collinear hnd).2.1.symm = (π / 2 : ℝ)) : (SEG A B).length ^ 2 + (SEG A C).length ^ 2 = (SEG B C).length ^ 2 := by
+  have h : cos (∠ B A C (ne_of_not_collinear hnd).2.2 (ne_of_not_collinear hnd).2.1.symm) = 0
+  · rw [right_triangle]
+    simp
+  have eq : 2 * ((SEG A B).length * (SEG A C).length * cos (∠ B A C (ne_of_not_collinear hnd).2.2 (ne_of_not_collinear hnd).2.1.symm)) = (SEG A B).length ^ 2 + (SEG A C).length ^ 2 - (SEG B C).length ^ 2
+  · --cos rule
     sorry
-  rw [h] at eq
-  linarith
+  simp [h, eq_sub_iff_add_eq] at eq
+  exact eq.symm
 
-theorem Pythagoras_of_tr_nd (tr_nd : Triangle_nd P) (h : tr_nd.angle₁.value = π / 2 ∨ tr_nd.angle₁.value =- π /2) : tr_nd.edge₂.length ^ 2 + tr_nd.edge₃.length ^ 2 = tr_nd.edge₁.length ^2 := sorry
+theorem Pythagoras_of_tr_nd (tr_nd : TriangleND P) (h : tr_nd.angle₁.value = ↑ (π / 2) ∨ tr_nd.angle₁.value =↑ (- π /2)) : tr_nd.edge₂.length ^ 2 + tr_nd.edge₃.length ^ 2 = tr_nd.edge₁.length ^2 := sorry
 
 end Pythagoras
 

@@ -29,25 +29,17 @@ noncomputable section
 namespace EuclidGeom
 
 /- Define Euclidean plane as normed vector space over ℝ of dimension 2 -/
-class EuclideanPlane (P : Type _) extends MetricSpace P, @NormedAddTorsor Vec P _ _
+class EuclideanPlane (P : Type*) extends MetricSpace P, NormedAddTorsor Vec P
 
-variable {P : Type _} [EuclideanPlane P]
+variable {P : Type*} [EuclideanPlane P]
 
-def Vec.mk_pt_pt (A B : P) : Vec := (B -ᵥ A)
+def Vec.mkPtPt (A B : P) : Vec := (B -ᵥ A)
 
-scoped notation:80 "VEC" A:max B:max => Vec.mk_pt_pt A B -- to make `- VEC A B` work, binding power > 75
-
-instance : EuclideanPlane (Vec) where
-  toMetricSpace := _
-  toNormedAddTorsor := @SeminormedAddCommGroup.toNormedAddTorsor _ _
-
-instance : @NormedAddTorsor (Vec) P _ _ := EuclideanPlane.toNormedAddTorsor
-
-instance : AddTorsor (Vec) P := by infer_instance
+scoped notation "VEC" => Vec.mkPtPt
 
 /- vector $AB +$ point $A =$ point $B$ -/
 @[simp]
-theorem start_vadd_vec_eq_end (A B : P) : (VEC A B) +ᵥ A = B := vsub_vadd B A
+theorem start_vadd_vec_eq_end (A B : P) : VEC A B +ᵥ A = B := vsub_vadd B A
 
 @[simp]
 theorem vadd_eq_self_iff_vec_eq_zero {A : P} {v : Vec} : v +ᵥ A = A ↔ v = 0 := by
@@ -55,48 +47,83 @@ theorem vadd_eq_self_iff_vec_eq_zero {A : P} {v : Vec} : v +ᵥ A = A ↔ v = 0 
 
 @[simp]
 theorem vec_same_eq_zero (A : P) : VEC A A = 0 := by
-  rw [Vec.mk_pt_pt, vsub_self]
+  rw [Vec.mkPtPt, vsub_self]
 
+@[simp]
 theorem neg_vec (A B : P) : - VEC A B = VEC B A := by
-  rw [Vec.mk_pt_pt, Vec.mk_pt_pt, neg_vsub_eq_vsub_rev]
+  rw [Vec.mkPtPt, Vec.mkPtPt, neg_vsub_eq_vsub_rev]
 
-theorem eq_iff_vec_eq_zero (A B : P) : B = A ↔ VEC A B = 0 := vsub_eq_zero_iff_eq.symm
+@[simp]
+theorem neg_vec_norm_eq (A B : P) : ‖- VEC A B‖ = ‖VEC A B‖ := by
+  rw [norm_neg]
 
-theorem ne_iff_vec_ne_zero (A B : P) : B ≠ A ↔ VEC A B ≠ 0 := (eq_iff_vec_eq_zero A B).not
+theorem vec_norm_eq_rev (A B : P) : ‖VEC A B‖ = ‖VEC B A‖ := by
+  rw [← neg_vec, neg_vec_norm_eq]
+
+theorem vec_norm_eq_dist (A B : P) : ‖VEC A B‖ = dist A B :=
+  (vec_norm_eq_rev A B).trans (NormedAddTorsor.dist_eq_norm' A B).symm
+
+theorem eq_iff_vec_eq_zero {A B : P} : B = A ↔ VEC A B = 0 := vsub_eq_zero_iff_eq.symm
+
+theorem ne_iff_vec_ne_zero {A B : P} : B ≠ A ↔ VEC A B ≠ 0 := eq_iff_vec_eq_zero.not
 
 @[simp]
 theorem vec_add_vec (A B C : P) : VEC A B + VEC B C = VEC A C := by
-  rw [add_comm, Vec.mk_pt_pt, Vec.mk_pt_pt, Vec.mk_pt_pt, vsub_add_vsub_cancel]
+  rw [add_comm, Vec.mkPtPt, Vec.mkPtPt, Vec.mkPtPt, vsub_add_vsub_cancel]
 
 @[simp]
-theorem vec_of_pt_vadd_pt_eq_vec (A : P) (v : Vec) : (VEC A (v +ᵥ A)) = v := vadd_vsub v A
+theorem vec_of_pt_vadd_pt_eq_vec (A : P) (v : Vec) : VEC A (v +ᵥ A) = v := vadd_vsub v A
+
+@[simp]
+theorem vec_of_vadd_pt_pt_eq_neg_vec (A : P) (v : Vec) : VEC (v +ᵥ A) A = - v := by
+  rw [← neg_vec]
+  congr
+  exact vec_of_pt_vadd_pt_eq_vec _ _
 
 @[simp]
 theorem vec_sub_vec (O A B: P) : VEC O B - VEC O A = VEC A B := by
-  rw [Vec.mk_pt_pt, Vec.mk_pt_pt, Vec.mk_pt_pt, vsub_sub_vsub_cancel_right]
+  rw [Vec.mkPtPt, Vec.mkPtPt, Vec.mkPtPt, vsub_sub_vsub_cancel_right]
 
 @[simp]
 theorem vec_sub_vec' (O A B: P) : VEC A O - VEC B O = VEC A B := by
-  rw [Vec.mk_pt_pt, Vec.mk_pt_pt, Vec.mk_pt_pt, vsub_sub_vsub_cancel_left]
+  rw [Vec.mkPtPt, Vec.mkPtPt, Vec.mkPtPt, vsub_sub_vsub_cancel_left]
 
 theorem pt_eq_pt_of_eq_smul_smul {O A B : P} {v : Vec} {tA tB : ℝ} (h : tA = tB) (ha : VEC O A = tA • v) (hb : VEC O B = tB • v) : A = B := by
   have hc : VEC A B = VEC O B - VEC O A := (vec_sub_vec O A B).symm
   rw [ha, hb, ← sub_smul, Iff.mpr sub_eq_zero h.symm, zero_smul] at hc
-  exact ((eq_iff_vec_eq_zero A B).2 hc).symm
-
-theorem eq_of_smul_Vec_nd_eq_smul_Vec_nd {v : Vec_nd} {tA tB : ℝ} (e : tA • v.1 = tB • v.1) : tA = tB := by
-  have h : (tA - tB) • v.1 = 0 := by
-    rw [sub_smul, e, Complex.real_smul, sub_self]
-  rw [smul_eq_zero] at h
-  rcases h with x | y
-  linarith
-  have: v.1 ≠ 0 := by
-    apply v.2
-  contradiction
+  exact (eq_iff_vec_eq_zero.2 hc).symm
 
 
-def Vec_nd.mk_pt_pt (A B : P) (h : B ≠ A) : Vec_nd := ⟨Vec.mk_pt_pt A B, (ne_iff_vec_ne_zero A B).mp h⟩
+def VecND.mkPtPt (A B : P) (h : B ≠ A) : VecND := ⟨Vec.mkPtPt A B, ne_iff_vec_ne_zero.mp h⟩
 
-scoped notation:80 "VEC_nd" A:max B:max h:max => Vec_nd.mk_pt_pt A B h ---- to make `- VEC_nd A B h` work, binding power > 75
+@[inherit_doc VecND.mkPtPt]
+scoped syntax "VEC_nd" ws term:max ws term:max (ws term:max)? : term
+
+macro_rules
+  | `(VEC_nd $A $B) => `(VecND.mkPtPt $A $B (@Fact.out _ inferInstance))
+  | `(VEC_nd $A $B $h) => `(VecND.mkPtPt $A $B $h)
+
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Delaborator for `VecND.mkPtPt` -/
+@[delab app.EuclidGeom.VecND.mkPtPt]
+def delabVecNDMkPtPt : Delab := do
+  let e ← getExpr
+  guard $ e.isAppOfArity' ``VecND.mkPtPt 5
+  let A ← withNaryArg 2 delab
+  let B ← withNaryArg 3 delab
+  withNaryArg 4 do
+    if (← getExpr).isAppOfArity' ``Fact.out 2 then
+      `(VEC_nd $A $B)
+    else
+      `(VEC_nd $A $B $(← delab))
+
+@[simp]
+lemma VecND.coe_mkPtPt (A B : P) [_h : Fact (B ≠ A)] : VEC_nd A B = VEC A B := rfl
+
+@[simp low]
+theorem VecND.neg_vecND (A B : P) [_h : Fact (B ≠ A)] : - VEC_nd A B = VEC_nd B A _h.1.symm := by
+  haveI : Fact (A ≠ B) := ⟨_h.1.symm⟩
+  ext
+  simp only [ne_eq, RayVector.coe_neg, coe_mkPtPt, neg_vec]
 
 end EuclidGeom
